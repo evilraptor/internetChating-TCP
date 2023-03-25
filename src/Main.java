@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
+//192.168.1.59
 class ChatClient extends Thread {
     private Socket socket = null;
     private ChatServer server = null;
@@ -54,7 +54,7 @@ class ChatServer {
         serverSocket = new ServerSocket(27015);
         System.out.println(serverSocket.getInetAddress().getHostAddress());
 
-        while (true) {
+        while (clients.isEmpty()/*true*/) {
             Socket socket = serverSocket.accept();
             ChatClient client = new ChatClient(socket, this);
             clients.add(client);
@@ -78,7 +78,42 @@ class ChatServer {
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        ChatServer chatServer = new ChatServer();
-        chatServer.Run();
+        /*ChatServer chatServer = new ChatServer();
+        chatServer.Run();*/
+        /*Socket socket=new Socket();
+        ChatServer server = null;
+        ChatClient chatClient=new ChatClient(socket,server);*/
+        //ChatServer chatServer=new ChatServer();
+
+        GreetClient greetClient=new GreetClient();
+        greetClient.startConnection("192.168.1.59",27015);
+        greetClient.sendMessage("o");
+        greetClient.stopConnection();
+
+
+    }
+}
+
+class GreetClient {
+    private Socket clientSocket;
+    private PrintWriter out;
+    private BufferedReader in;
+
+    public void startConnection(String ip, int port) throws IOException {
+        clientSocket = new Socket(ip, port);
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    }
+
+    public String sendMessage(String msg) throws IOException {
+        out.println(msg);
+        String resp = "a";//in.readLine();
+        return resp;
+    }
+
+    public void stopConnection() throws IOException {
+        in.close();
+        out.close();
+        clientSocket.close();
     }
 }
