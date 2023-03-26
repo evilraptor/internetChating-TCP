@@ -65,8 +65,7 @@ public class ChatServer {
         }
     }
 
-    //---------------------------------------------------------
-    public static void main(String[] ar) {
+    void createServer() throws IOException {
         ServerSocket srvSocket = null;
         try {
             try {
@@ -75,7 +74,6 @@ public class ChatServer {
                 InetAddress ia;
                 ia = InetAddress.getByName("localhost");
                 srvSocket = new ServerSocket(port, 0, ia);
-
                 System.out.println("Server started\n\n");
 
                 while (true) {
