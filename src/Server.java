@@ -1,10 +1,7 @@
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
 
-public class Main {
+public class Server {
     public static void main(String[] args) throws IOException {
-        //ChatClient chatClient = new ChatClient();
-        //chatClient.startClient();
         ChatServer chatServer=new ChatServer();
         chatServer.createServer();
     }
