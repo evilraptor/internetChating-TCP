@@ -73,7 +73,7 @@ public class ChatServer {
                 // Подключение сокета к localhost
                 InetAddress ia;
                 ia = InetAddress.getByName("localhost");
-                srvSocket = new ServerSocket(port, 0, ia);
+                srvSocket = new ServerSocket(6666);
                 System.out.println("Server started\n\n");
 
                 while (true) {
