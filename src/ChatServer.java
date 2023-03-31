@@ -1,56 +1,59 @@
 import java.io.*;
 import java.net.*;
 
-public class ChatServer {
-    private static final int port = 6666;
+public class ChatServer extends Thread
+{
+    // открываемый порт сервера
+    private static final int port   = 6666;
     private String TEMPL_MSG =
             "The client '%d' sent me message : \n\t";
     private String TEMPL_CONN =
             "The client '%d' closed the connection";
 
-    private Socket socket;
-    private int num;
+    private  Socket socket;
+    private  int    num;
 
-    public void setSocket(int num, Socket socket) {
+    public ChatServer() {}
+    public void setSocket(int num, Socket socket)
+    {
         // Определение значений
-        this.num = num;
+        this.num    = num;
         this.socket = socket;
 
         // Установка daemon-потока
-        Thread thread = new Thread();
-        thread.setDaemon(true);
+        setDaemon(true);
         /*
          * Определение стандартного приоритета главного потока
          * int java.lang.Thread.NORM_PRIORITY = 5-the default
          *               priority that is assigned to a thread.
          */
-        //thread.setPriority(NORM_PRIORITY);
+        setPriority(NORM_PRIORITY);
         // Старт потока
-        thread.start();
+        start();
     }
-
-    public void run() {
+    public void run()
+    {
         try {
             // Определяем входной и выходной потоки сокета
-            // для обмена данными с клиентом
-            InputStream sin = socket.getInputStream();
+            // для обмена данными с клиентом 
+            InputStream  sin  = socket.getInputStream();
             OutputStream sout = socket.getOutputStream();
 
-            DataInputStream dataInputStream = new DataInputStream(sin);
-            DataOutputStream dataOutputStream = new DataOutputStream(sout);
+            DataInputStream  dis = new DataInputStream (sin );
+            DataOutputStream dos = new DataOutputStream(sout);
 
             String line = null;
-            while (true) {
+            while(true) {
                 // Ожидание сообщения от клиента
-                line = dataInputStream.readUTF();
+                line = dis.readUTF();
                 System.out.println(
                         String.format(TEMPL_MSG, num) + line);
                 System.out.println("I'm sending it back...");
-                // Отсылаем клиенту обратно эту самую
+                // Отсылаем клиенту обратно эту самую 
                 // строку текста
-                dataOutputStream.writeUTF("Server receive text : " + line);
+                dos.writeUTF("Server receive text : " + line);
                 // Завершаем передачу данных
-                dataOutputStream.flush();
+                dos.flush();
                 System.out.println();
                 if (line.equalsIgnoreCase("quit")) {
                     // завершаем соединение
@@ -60,12 +63,12 @@ public class ChatServer {
                     break;
                 }
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             System.out.println("Exception : " + e);
         }
     }
-
-    void createServer() throws IOException {
+    //---------------------------------------------------------
+    public void createServer(){
         ServerSocket srvSocket = null;
         try {
             try {
@@ -73,10 +76,11 @@ public class ChatServer {
                 // Подключение сокета к localhost
                 InetAddress ia;
                 ia = InetAddress.getByName("localhost");
-                srvSocket = new ServerSocket(6666);
+                srvSocket = new ServerSocket(port);
+
                 System.out.println("Server started\n\n");
 
-                while (true) {
+                while(true) {
                     // ожидание подключения
                     Socket socket = srvSocket.accept();
                     System.err.println("Client accepted");
@@ -84,7 +88,7 @@ public class ChatServer {
                     // в отдельном потоке
                     new ChatServer().setSocket(i++, socket);
                 }
-            } catch (Exception e) {
+            } catch(Exception e) {
                 System.out.println("Exception : " + e);
             }
         } finally {
