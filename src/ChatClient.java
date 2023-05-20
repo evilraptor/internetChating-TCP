@@ -3,6 +3,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class ChatClient {
+    String userName = "just a Potato";
     private static final int serverPort = 6666;
     private static final String localhost = "192.168.1.59";
 
@@ -33,10 +34,14 @@ public class ChatClient {
                 String line = null;
                 System.out.println("Ready to chat. Type something and press enter... (for example Info)");
                 while (true) {
-                    sendMessage(keyboard, in, out);
-                    readNewMessages(in);
-                    if (line.endsWith("quit"))
+                    line=sendMessage(keyboard, in, out);
+                    //System.out.println("sda");
+                    //readNewMessages(in);
+                    //break;
+                    if ((line != null) && (line.endsWith("quit"))) {
+                        //if (out.equals("quit"))
                         break;
+                    }
                 }
 
                 /*while (true) {
@@ -90,6 +95,4 @@ public class ChatClient {
             return line;
         }
     }
-
-
 }
