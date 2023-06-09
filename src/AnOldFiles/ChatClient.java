@@ -1,3 +1,5 @@
+package AnOldFiles;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -11,12 +13,12 @@ public class ChatClient {
         Socket socket = null;
         try {
             try {
-                System.out.println("It's Client side\nConnecting to the server\n\t (IP address: " +
+                System.out.println("It's AnOldFiles.Client side\nConnecting to the server\n\t (IP address: " +
                         localhost + ", port: " + serverPort + ")");
                 InetAddress ipAddress = InetAddress.getByName(localhost);
                 socket = new Socket(ipAddress, serverPort);
                 System.out.println(
-                        "Client was connected.");
+                        "AnOldFiles.Client was connected.");
                 System.out.println(
                         "\tLocalPort = " + socket.getLocalPort() + "\n\tInetAddress.HostAddress = "
                                 + socket.getInetAddress().getHostAddress());

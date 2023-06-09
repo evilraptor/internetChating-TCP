@@ -1,3 +1,5 @@
+package AnOldFiles;
+
 import java.io.*;
 import java.net.*;
 
@@ -51,7 +53,7 @@ public class ChatServer extends Thread
                 System.out.println("I'm sending it back...");
                 // Отсылаем клиенту обратно эту самую 
                 // строку текста
-                dos.writeUTF("Server receive text : " + line);
+                dos.writeUTF("AnOldFiles.Server receive text : " + line);
                 // Завершаем передачу данных
                 dos.flush();
                 System.out.println();
@@ -78,12 +80,12 @@ public class ChatServer extends Thread
                 ia = InetAddress.getByName("localhost");
                 srvSocket = new ServerSocket(port);
 
-                System.out.println("Server started\n\n");
+                System.out.println("AnOldFiles.Server started\n\n");
 
                 while(true) {
                     // ожидание подключения
                     Socket socket = srvSocket.accept();
-                    System.err.println("Client accepted");
+                    System.err.println("AnOldFiles.Client accepted");
                     // Стартуем обработку клиента
                     // в отдельном потоке
                     new ChatServer().setSocket(i++, socket);
