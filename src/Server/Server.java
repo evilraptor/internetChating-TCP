@@ -5,8 +5,8 @@ import java.net.*;
 
 public class Server {
     public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(1234);
-        System.out.println("Chat server started on port 1234");
+        ServerSocket serverSocket = new ServerSocket(6666);
+        System.out.println("Chat server started on port 6666");
 
         while (true) {
             Socket clientSocket = serverSocket.accept();
