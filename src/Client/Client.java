@@ -5,7 +5,7 @@ import java.net.*;
 
 public class Client {
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("localhost", 6666);
+        Socket socket = new Socket("198.168.1.59", 6666);
         System.out.println("Connected to chat server on localhost:6666");
 
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
