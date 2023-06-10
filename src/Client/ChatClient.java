@@ -7,7 +7,7 @@ import java.net.Socket;
 public class ChatClient {
     String userName = "just a Potato";
     private static final int serverPort = 6666;
-    private static final String localhost = "192.168.1.48";
+    private static final String localhost = "192.168.1.59";
 
     public void startClient() {
         Socket socket = null;
@@ -101,7 +101,7 @@ public class ChatClient {
             return line;
         else if(line.endsWith("/usersList")){
             line = in.readUTF();
-            System.out.println("The server sent:\n\t" + line);
+            System.out.println("The server sent clients count:\n\t" + line);
             for(int i=0;i<Integer.parseInt(line);i++){
                 line = in.readUTF();
             }

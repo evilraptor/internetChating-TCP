@@ -79,10 +79,10 @@ public class ChatServer extends Thread {
 
                 if (line.equalsIgnoreCase("/usersList")) {
                     int clientsCount=clients.size();
-                    dos.writeUTF("Clients count: " + clientsCount);
+                    dos.writeUTF(""+clientsCount);
                     dos.flush();
                     for (Map.Entry<Integer, UserProfile> entry : clients.entrySet()) {
-                        dos.writeUTF("Id: " + entry.getKey() + ", userName: " + entry.getValue());
+                        dos.writeUTF("Id: " + entry.getKey() + ", userName: " + entry.getValue().getUserName());
                         dos.flush();
                     }
                 }
