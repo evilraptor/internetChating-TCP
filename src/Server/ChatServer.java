@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 //TODO добавь ник (чек)
-//TODO список участников чата
+//TODO список участников чата (чек)
 //TODO показывыает все сообщения, которые отправили в чат с момента подключения + некоторое число, отправленных до;
 //TODO клиент отображает такие события как: подключение нового человека в чат и уход человека из чата. Сервер должен корректно понимать ситуацию отключения клиента от чата (по таймауту).
 //TODO сервер должен логгировать все события, которые происходят на его стороне
@@ -88,7 +88,8 @@ public class ChatServer extends Thread {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Exception : " + e);
+            System.out.println(this.clients.get(this.num).getUserName()+"send: " +"Exception : " + e);
+            this.clients.remove(this.num);
         }
     }
 
