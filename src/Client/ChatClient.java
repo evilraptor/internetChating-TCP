@@ -50,36 +50,16 @@ public class ChatClient {
                 out.writeUTF(userName);
                 out.flush();
                 while (true) {
-                    line = sendMessage(keyboard, in, out);
-                    //System.out.println("sda");
-                    //readNewMessages(in);
-                    //break;
+                    if(keyboard.ready())
+                        line = sendMessage(keyboard, in, out);
+                    else if(in.available() > 0)
+                        readNewMessages(in);
+
                     if ((line != null) && (line.endsWith("/quit"))) {
-                        //if (out.equals("quit"))
                         break;
                     }
 
-                    if ((line != null) && (line.endsWith("/usersList"))) {
-                        //if (out.equals("quit"))
-                        break;
-                    }
                 }
-
-                /*while (true) {
-                    //ввел строку и нажал Enter
-                    line = keyboard.readLine();
-                    // Отсылаем строку серверу
-                    out.writeUTF(line);
-                    // Завершаем поток
-                    out.flush();
-                    // Ждем ответа от сервера
-                    line = in.readUTF();
-                    if (line.endsWith("/quit"))
-                        break;
-                    else {
-                        System.out.println("The server sent:\n\t" + line);
-                    }
-                }*/
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -122,6 +102,7 @@ public class ChatClient {
             return line;
         } else {
             System.out.println("The server sent:\n\t" + line);
+            //in.reset();
             return line;
         }
     }

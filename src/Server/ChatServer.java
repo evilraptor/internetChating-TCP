@@ -58,16 +58,23 @@ public class ChatServer extends Thread {
             DataInputStream dis = new DataInputStream(sin);
             DataOutputStream dos = new DataOutputStream(sout);
 
+            clients.get(num).setDis(dis);
+            clients.get(num).setDos(dos);
+            String userName = clients.get(num).getUserName();
             String line = null;
             while (true) {
                 // Ожидание сообщения от клиента
                 line = dis.readUTF();
                 System.out.println(
                         String.format(TEMPL_MSG, clients.get(num).getUserName()) + line);
-                System.out.println("I'm sending it back...");
-                // Отсылаем клиенту обратно эту самую
-                // строку текста
-                dos.writeUTF("Server.Server receive text: " + line);
+                //System.out.println("I'm sending it back...");
+                // Отсылаем клиентам эту самую строку текста
+                for (Map.Entry<Integer, UserProfile> entry : clients.entrySet()) {
+                    entry.getValue().getDos().writeUTF(userName + ": " + line);
+                    dos.flush();
+                }
+
+                //dos.writeUTF("userName: " + line);
                 // Завершаем передачу данных
                 dos.flush();
                 System.out.println();
