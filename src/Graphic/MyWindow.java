@@ -1,5 +1,7 @@
 package Graphic;
 
+import Server.Server;
+
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -30,8 +32,9 @@ public class MyWindow extends JFrame {
 
                 if (result == JOptionPane.OK_OPTION) {
                     // Создание нового экземпляра класса А и вызов его метода
-                    A a = new A();
-                    a.printText(textField1.getText());
+                    //A a = new A();
+                    //a.printText(textField1.getText());
+                    new Server(textField1.getText());
                 }
             }
         });

@@ -5,9 +5,21 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class ChatClient {
-    String userName = "just a Potato";
-    private static final int serverPort = 6666;
-    private static final String localhost = "192.168.1.59";
+    String userName;
+    private int serverPort;
+    private String localhost;
+
+    public ChatClient() {
+        String userName = "just a Potato";
+        localhost = "192.168.1.59";
+        serverPort = 6666;
+    }
+
+    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort) {
+        userName = inputUserName;
+        localhost = inputLocalhost;
+        serverPort = inputServerPort;
+    }
 
     public void startClient() {
         Socket socket = null;
@@ -38,7 +50,7 @@ public class ChatClient {
                 out.writeUTF(userName);
                 out.flush();
                 while (true) {
-                    line=sendMessage(keyboard, in, out);
+                    line = sendMessage(keyboard, in, out);
                     //System.out.println("sda");
                     //readNewMessages(in);
                     //break;
@@ -99,17 +111,16 @@ public class ChatClient {
         line = in.readUTF();
         if (line.endsWith("/quit"))
             return line;
-        else if(line.endsWith("/usersList")){
+        else if (line.endsWith("/usersList")) {
             line = in.readUTF();
-            int clientsCount=Integer.parseInt(line);
-            System.out.println("The server sent clients count:" + clientsCount+"\n\t");
-            for(int i=0;i<clientsCount;i++){
+            int clientsCount = Integer.parseInt(line);
+            System.out.println("The server sent clients count:" + clientsCount + "\n\t");
+            for (int i = 0; i < clientsCount; i++) {
                 line = in.readUTF();
                 System.out.println(line);
             }
             return line;
-        }
-        else {
+        } else {
             System.out.println("The server sent:\n\t" + line);
             return line;
         }

@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ChatServer extends Thread {
     // открываемый порт сервера
-    private static final int port = 6666;
+    private int port;
     private String TEMPL_MSG = "The client '%s' sent me message : \n\t";
     private String TEMPL_CONN = "The client '%s' closed the connection";
     private Map<Integer, UserProfile> clients = new HashMap<>();
@@ -23,6 +23,11 @@ public class ChatServer extends Thread {
     private int num;
 
     public ChatServer() {
+        port = 6666;
+    }
+
+    public ChatServer(int inPort) {
+        port = inPort;
     }
 
     public void setSocket(int num, Socket socket, Map<Integer, UserProfile> serverClients) {
@@ -78,8 +83,8 @@ public class ChatServer extends Thread {
                 }
 
                 if (line.equalsIgnoreCase("/usersList")) {
-                    int clientsCount=clients.size();
-                    dos.writeUTF(""+clientsCount);
+                    int clientsCount = clients.size();
+                    dos.writeUTF("" + clientsCount);
                     dos.flush();
                     for (Map.Entry<Integer, UserProfile> entry : clients.entrySet()) {
                         dos.writeUTF("Id: " + entry.getKey() + ", userName: " + entry.getValue().getUserName());
@@ -88,7 +93,7 @@ public class ChatServer extends Thread {
                 }
             }
         } catch (Exception e) {
-            System.out.println(this.clients.get(this.num).getUserName()+"send: " +"Exception : " + e);
+            System.out.println(this.clients.get(this.num).getUserName() + "send: " + "Exception : " + e);
             this.clients.remove(this.num);
         }
     }
