@@ -101,9 +101,11 @@ public class ChatClient {
             return line;
         else if(line.endsWith("/usersList")){
             line = in.readUTF();
-            System.out.println("The server sent clients count:\n\t" + line);
-            for(int i=0;i<Integer.parseInt(line);i++){
+            int clientsCount=Integer.parseInt(line);
+            System.out.println("The server sent clients count:" + clientsCount+"\n\t");
+            for(int i=0;i<clientsCount;i++){
                 line = in.readUTF();
+                System.out.println("line");
             }
             return line;
         }
