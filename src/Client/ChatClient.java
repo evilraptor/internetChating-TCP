@@ -10,7 +10,7 @@ public class ChatClient {
     private String localhost;
 
     public ChatClient() {
-        String userName = "just a Potato";
+        userName = "just a Potato";
         localhost = "192.168.1.59";
         serverPort = 6666;
     }

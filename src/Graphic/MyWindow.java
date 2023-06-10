@@ -1,5 +1,6 @@
 package Graphic;
 
+import Client.Client;
 import Server.Server;
 
 import javax.swing.*;
@@ -7,7 +8,7 @@ import java.awt.event.*;
 
 public class MyWindow extends JFrame {
     private JButton serverButton, clientButton;
-    private JTextField textField1, textField2;
+    private JTextField textField1, textField2, textField3;
     private JTextArea textArea;
 
     public MyWindow() {
@@ -42,20 +43,24 @@ public class MyWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Создание панели для ввода текста
                 JPanel panel = new JPanel();
-                panel.add(new JLabel("write the server's ip"));
+                panel.add(new JLabel("userName"));
                 textField1 = new JTextField(10);
                 panel.add(textField1);
-                panel.add(new JLabel("write the server's port"));
+                panel.add(new JLabel("server's ip"));
                 textField2 = new JTextField(10);
                 panel.add(textField2);
+                panel.add(new JLabel("server's port"));
+                textField3 = new JTextField(10);
+                panel.add(textField3);
 
                 // Создание диалогового окна для ввода текста
                 int result = JOptionPane.showConfirmDialog(MyWindow.this, panel, "joining the server", JOptionPane.OK_CANCEL_OPTION);
 
                 if (result == JOptionPane.OK_OPTION) {
                     // Создание нового экземпляра класса А и вызов его метода
-                    B b = new B();
-                    b.printText(textField1.getText(), textField2.getText());
+                    //B b = new B();
+                    //b.printText(textField1.getText(), textField2.getText());
+                    new Client(textField1.getText(), textField2.getText(),textField3.getText());
                 }
             }
         });
