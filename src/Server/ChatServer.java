@@ -38,6 +38,8 @@ public class ChatServer extends Thread
         // Старт потока
         start();
     }
+
+    @Override
     public void run() {
         try {
             // Определяем входной и выходной потоки сокета
@@ -61,7 +63,7 @@ public class ChatServer extends Thread
                 // Завершаем передачу данных
                 dos.flush();
                 System.out.println();
-                if (line.equalsIgnoreCase("quit")) {
+                if (line.equalsIgnoreCase("/quit")) {
                     // завершаем соединение
                     socket.close();
                     System.out.println(
@@ -89,7 +91,13 @@ public class ChatServer extends Thread
                 while(true) {
                     // ожидание подключения
                     Socket socket = srvSocket.accept();
-                    System.err.println("Client.Client accepted");
+
+                    sleep(1000);
+                    String line = null;
+                    DataInputStream  dis = new DataInputStream(socket.getInputStream());
+                    line = dis.readUTF();
+
+                    System.err.println(line+" accepted");
                     // Стартуем обработку клиента
                     // в отдельном потоке
                     new ChatServer().setSocket(i++, socket);

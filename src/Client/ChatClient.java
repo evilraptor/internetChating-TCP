@@ -35,6 +35,8 @@ public class ChatClient {
                 keyboard = new BufferedReader(inputStreamReader);
                 String line = null;
                 System.out.println("Ready to chat. Type something and press enter... (for example Info)");
+                out.writeUTF(userName);
+                out.flush();
                 while (true) {
                     line=sendMessage(keyboard, in, out);
                     //System.out.println("sda");
