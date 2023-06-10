@@ -1,49 +1,53 @@
 package Server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.net.*;
 
 public class Server {
-    private int port;
-    private List<ChatHandler> clients;
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(1234);
+        System.out.println("Chat server started on port 1234");
 
-    public Server(int port) {
-        this.port = port;
-        this.clients = new ArrayList();
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
+
+            Thread clientThread = new Thread(new ClientHandler(clientSocket));
+            clientThread.start();
+        }
+    }
+}
+
+class ClientHandler implements Runnable {
+    private Socket clientSocket;
+    private BufferedReader in;
+    private PrintWriter out;
+
+    public ClientHandler(Socket socket) throws IOException {
+        this.clientSocket = socket;
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
     }
 
-    public void start() {
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server started on port " + port);
-
+    public void run() {
+        try {
             while (true) {
-                Socket clientSocket = serverSocket.accept();
-                ChatHandler handler = new ChatHandler(clientSocket, this);
-                clients.add(handler);
-                handler.start();
+                String inputLine = in.readLine();
+                if (inputLine == null) {
+                    break;
+                }
+                System.out.println("Message received from " + clientSocket.getInetAddress().getHostAddress() + ": " + inputLine);
+                out.println("You said: " + inputLine);
             }
         } catch (IOException e) {
-            System.out.println("Server error: " + e.getMessage());
-        }
-    }
-
-    public void broadcast(String message, ChatHandler excludeHandler) {
-        for (ChatHandler handler : clients) {
-            if (handler != excludeHandler) {
-                handler.sendMessage(message);
+            System.out.println("Error handling client: " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                System.out.println("Error closing client socket: " + e.getMessage());
             }
+            System.out.println("Client disconnected: " + clientSocket.getInetAddress().getHostAddress());
         }
-    }
-
-    public void removeClient(ChatHandler handler) {
-        clients.remove(handler);
-    }
-
-    public static void main(String[] args) {
-        Server server = new Server(1234);
-        server.start();
     }
 }

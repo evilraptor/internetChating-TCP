@@ -4,8 +4,9 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class MyWindow extends JFrame {
-    private JButton serverButton,clientButton;
+    private JButton serverButton, clientButton;
     private JTextField textField1, textField2;
+    private JTextArea textArea;
 
     public MyWindow() {
         super("the chat server/client window");
@@ -30,7 +31,7 @@ public class MyWindow extends JFrame {
                 if (result == JOptionPane.OK_OPTION) {
                     // Создание нового экземпляра класса А и вызов его метода
                     A a = new A();
-                    a.printText(textField1.getText(), textField2.getText());
+                    a.printText(textField1.getText());
                 }
             }
         });
@@ -50,8 +51,8 @@ public class MyWindow extends JFrame {
 
                 if (result == JOptionPane.OK_OPTION) {
                     // Создание нового экземпляра класса А и вызов его метода
-                    A a = new A();
-                    a.printText(textField1.getText(), textField2.getText());
+                    B b = new B();
+                    b.printText(textField1.getText(), textField2.getText());
                 }
             }
         });
@@ -75,6 +76,12 @@ public class MyWindow extends JFrame {
 }
 
 class A {
+    public void printText(String text1) {
+        System.out.println(text1);
+    }
+}
+
+class B {
     public void printText(String text1, String text2) {
         System.out.println(text1 + " " + text2);
     }
