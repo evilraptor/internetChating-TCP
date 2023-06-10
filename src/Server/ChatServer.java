@@ -73,19 +73,18 @@ public class ChatServer extends Thread {
                     entry.getValue().getDos().writeUTF(userName + ": " + line);
                     dos.flush();
                 }
-
-                //dos.writeUTF("userName: " + line);
-                // Завершаем передачу данных
-                dos.flush();
-                System.out.println();
-
                 //поймали слово выхода
                 if (line.equalsIgnoreCase("/quit")) {
                     // завершаем соединение
                     socket.close();
-                    System.out.println(
-                            String.format(TEMPL_CONN, clients.get(num).getUserName()));
+                    String leftUserName = clients.get(num).getUserName();
+                    System.out.println(String.format(TEMPL_CONN, leftUserName));
                     clients.remove(num);
+
+                    for (Map.Entry<Integer, UserProfile> entry : clients.entrySet()) {
+                        entry.getValue().getDos().writeUTF(userName + " left the server");
+                        dos.flush();
+                    }
                     break;
                 }
 
@@ -101,6 +100,18 @@ public class ChatServer extends Thread {
             }
         } catch (Exception e) {
             System.out.println(this.clients.get(this.num).getUserName() + "send: " + "Exception : " + e);
+
+            System.out.println(String.format(TEMPL_CONN, clients.get(num).getUserName()));
+            clients.remove(num);
+            for (Map.Entry<Integer, UserProfile> entry : clients.entrySet()) {
+                try {
+                    entry.getValue().getDos().writeUTF(clients.get(num).getUserName() + " left the server");
+                    entry.getValue().getDos().flush();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
             this.clients.remove(this.num);
         }
     }

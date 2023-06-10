@@ -35,7 +35,8 @@ public class MyWindow extends JFrame {
                     // Создание нового экземпляра класса А и вызов его метода
                     //A a = new A();
                     //a.printText(textField1.getText());
-                    new Server(textField1.getText());
+
+                    //new Server(textField1.getText());
                 }
             }
         });

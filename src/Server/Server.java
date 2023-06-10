@@ -2,12 +2,11 @@ package Server;
 
 import java.io.IOException;
 
-public class Server {
+public abstract class Server implements Runnable {
     public static void main(String[] args) throws IOException {
         ChatServer chatServer = new ChatServer();
         chatServer.createServer();
     }
-
     public Server() {
         ChatServer chatServer = new ChatServer();
         chatServer.createServer();

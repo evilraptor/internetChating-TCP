@@ -101,7 +101,7 @@ public class ChatClient {
             }
             return line;
         } else {
-            System.out.println("The server sent:\n\t" + line);
+            System.out.println(line);
             //in.reset();
             return line;
         }
