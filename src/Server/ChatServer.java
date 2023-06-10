@@ -125,10 +125,10 @@ public class ChatServer extends Thread {
                 int i = 0; // Счётчик подключений
                 // Подключение сокета к localhost
                 InetAddress ia;
-                ia = InetAddress.getByName("localhost");
+                ia = InetAddress.getByName("192.168.1.59");
                 srvSocket = new ServerSocket(port);
 
-                System.out.println("Server.Server started\n\n");
+                System.out.println("Server started "+ia+"\n\n");
 
                 while (true) {
                     // ожидание подключения
