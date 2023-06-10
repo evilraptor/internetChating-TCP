@@ -105,7 +105,7 @@ public class ChatClient {
             System.out.println("The server sent clients count:" + clientsCount+"\n\t");
             for(int i=0;i<clientsCount;i++){
                 line = in.readUTF();
-                System.out.println("line");
+                System.out.println(line);
             }
             return line;
         }
