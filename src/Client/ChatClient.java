@@ -11,7 +11,7 @@ public class ChatClient {
 
     public ChatClient() {
         userName = "just a Potato";
-        localhost = "192.168.1.59";
+        localhost = "192.168.43.48";
         serverPort = 6666;
     }
 
