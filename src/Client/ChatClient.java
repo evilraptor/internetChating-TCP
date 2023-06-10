@@ -46,6 +46,11 @@ public class ChatClient {
                         //if (out.equals("quit"))
                         break;
                     }
+
+                    if ((line != null) && (line.endsWith("/usersList"))) {
+                        //if (out.equals("quit"))
+                        break;
+                    }
                 }
 
                 /*while (true) {
@@ -94,6 +99,10 @@ public class ChatClient {
         line = in.readUTF();
         if (line.endsWith("/quit"))
             return line;
+        else if(line.endsWith("/usersList")){
+            line = in.readUTF();
+            return line;
+        }
         else {
             System.out.println("The server sent:\n\t" + line);
             return line;

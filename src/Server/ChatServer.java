@@ -2,31 +2,34 @@ package Server;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-//TODO добавь ник
+//TODO добавь ник (чек)
 //TODO список участников чата
 //TODO показывыает все сообщения, которые отправили в чат с момента подключения + некоторое число, отправленных до;
 //TODO клиент отображает такие события как: подключение нового человека в чат и уход человека из чата. Сервер должен корректно понимать ситуацию отключения клиента от чата (по таймауту).
 //TODO сервер должен логгировать все события, которые происходят на его стороне
 
-public class ChatServer extends Thread
-{
+public class ChatServer extends Thread {
     // открываемый порт сервера
-    private static final int port   = 6666;
-    private String TEMPL_MSG = "The client '%d' sent me message : \n\t";
-    private String TEMPL_CONN = "The client '%d' closed the connection";
-    private List<userProfile> clients;
-    private  Socket socket;
-    private  int    num;
+    private static final int port = 6666;
+    private String TEMPL_MSG = "The client '%s' sent me message : \n\t";
+    private String TEMPL_CONN = "The client '%s' closed the connection";
+    private Map<Integer, UserProfile> clients = new HashMap<>();
+    private Socket socket;
+    private int num;
 
-    public ChatServer() {}
-    public void setSocket(int num, Socket socket)
-    {
+    public ChatServer() {
+    }
+
+    public void setSocket(int num, Socket socket, Map<Integer, UserProfile> serverClients) {
         // Определение значений
-        this.num    = num;
+        this.num = num;
         this.socket = socket;
-
+        clients = serverClients;
         // Установка daemon-потока
         setDaemon(true);
         /*
@@ -44,39 +47,54 @@ public class ChatServer extends Thread
         try {
             // Определяем входной и выходной потоки сокета
             // для обмена данными с клиентом
-            InputStream  sin  = socket.getInputStream();
+            InputStream sin = socket.getInputStream();
             OutputStream sout = socket.getOutputStream();
 
-            DataInputStream  dis = new DataInputStream (sin );
+            DataInputStream dis = new DataInputStream(sin);
             DataOutputStream dos = new DataOutputStream(sout);
 
             String line = null;
-            while(true) {
+            while (true) {
                 // Ожидание сообщения от клиента
                 line = dis.readUTF();
                 System.out.println(
-                        String.format(TEMPL_MSG, num) + line);
+                        String.format(TEMPL_MSG, clients.get(num).getUserName()) + line);
                 System.out.println("I'm sending it back...");
                 // Отсылаем клиенту обратно эту самую
                 // строку текста
-                dos.writeUTF("Server.Server receive text : " + line);
+                dos.writeUTF("Server.Server receive text: " + line);
                 // Завершаем передачу данных
                 dos.flush();
                 System.out.println();
+
+                //поймали слово выхода
                 if (line.equalsIgnoreCase("/quit")) {
                     // завершаем соединение
                     socket.close();
                     System.out.println(
-                            String.format(TEMPL_CONN, num));
+                            String.format(TEMPL_CONN, clients.get(num).getUserName()));
+                    clients.remove(num);
                     break;
                 }
+
+                if (line.equalsIgnoreCase("/usersList")) {
+                    int clientsCount=clients.size();
+                    dos.writeUTF("Clients count: " + clientsCount);
+                    dos.flush();
+                    for (Map.Entry<Integer, UserProfile> entry : clients.entrySet()) {
+                        dos.writeUTF("Id: " + entry.getKey() + ", userName: " + entry.getValue());
+                        dos.flush();
+                    }
+                }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("Exception : " + e);
         }
     }
+
     //---------------------------------------------------------
-    public void createServer(){
+    public void createServer() {
+        clients = new HashMap<Integer, UserProfile>();
         ServerSocket srvSocket = null;
         try {
             try {
@@ -88,21 +106,26 @@ public class ChatServer extends Thread
 
                 System.out.println("Server.Server started\n\n");
 
-                while(true) {
+                while (true) {
                     // ожидание подключения
                     Socket socket = srvSocket.accept();
 
-                    sleep(1000);
-                    String line = null;
-                    DataInputStream  dis = new DataInputStream(socket.getInputStream());
-                    line = dis.readUTF();
+                    //получаем юсернейм
+                    String userName = null;
+                    DataInputStream dis = new DataInputStream(socket.getInputStream());
+                    userName = dis.readUTF();
+                    System.err.println(userName + " accepted");
 
-                    System.err.println(line+" accepted");
+                    //добавляем человека в лист юзеров
+                    UserProfile newUser = new UserProfile();
+                    newUser.setUserName(userName);
+                    clients.put(i, newUser);
+
                     // Стартуем обработку клиента
                     // в отдельном потоке
-                    new ChatServer().setSocket(i++, socket);
+                    new ChatServer().setSocket(i++, socket, clients);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 System.out.println("Exception : " + e);
             }
         } finally {
