@@ -2,16 +2,21 @@ package Server;
 
 import java.io.*;
 import java.net.*;
+import java.util.List;
+
+//TODO добавь ник
+//TODO список участников чата
+//TODO показывыает все сообщения, которые отправили в чат с момента подключения + некоторое число, отправленных до;
+//TODO клиент отображает такие события как: подключение нового человека в чат и уход человека из чата. Сервер должен корректно понимать ситуацию отключения клиента от чата (по таймауту).
+//TODO сервер должен логгировать все события, которые происходят на его стороне
 
 public class ChatServer extends Thread
 {
     // открываемый порт сервера
     private static final int port   = 6666;
-    private String TEMPL_MSG =
-            "The client '%d' sent me message : \n\t";
-    private String TEMPL_CONN =
-            "The client '%d' closed the connection";
-
+    private String TEMPL_MSG = "The client '%d' sent me message : \n\t";
+    private String TEMPL_CONN = "The client '%d' closed the connection";
+    private List<userProfile> clients;
     private  Socket socket;
     private  int    num;
 
@@ -33,11 +38,10 @@ public class ChatServer extends Thread
         // Старт потока
         start();
     }
-    public void run()
-    {
+    public void run() {
         try {
             // Определяем входной и выходной потоки сокета
-            // для обмена данными с клиентом 
+            // для обмена данными с клиентом
             InputStream  sin  = socket.getInputStream();
             OutputStream sout = socket.getOutputStream();
 
@@ -51,7 +55,7 @@ public class ChatServer extends Thread
                 System.out.println(
                         String.format(TEMPL_MSG, num) + line);
                 System.out.println("I'm sending it back...");
-                // Отсылаем клиенту обратно эту самую 
+                // Отсылаем клиенту обратно эту самую
                 // строку текста
                 dos.writeUTF("Server.Server receive text : " + line);
                 // Завершаем передачу данных

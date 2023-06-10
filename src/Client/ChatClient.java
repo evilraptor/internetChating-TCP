@@ -40,7 +40,7 @@ public class ChatClient {
                     //System.out.println("sda");
                     //readNewMessages(in);
                     //break;
-                    if ((line != null) && (line.endsWith("quit"))) {
+                    if ((line != null) && (line.endsWith("/quit"))) {
                         //if (out.equals("quit"))
                         break;
                     }
@@ -55,7 +55,7 @@ public class ChatClient {
                     out.flush();
                     // Ждем ответа от сервера
                     line = in.readUTF();
-                    if (line.endsWith("quit"))
+                    if (line.endsWith("/quit"))
                         break;
                     else {
                         System.out.println("The server sent:\n\t" + line);
@@ -90,7 +90,7 @@ public class ChatClient {
     String readNewMessages(DataInputStream in) throws IOException {
         String line = null;
         line = in.readUTF();
-        if (line.endsWith("quit"))
+        if (line.endsWith("/quit"))
             return line;
         else {
             System.out.println("The server sent:\n\t" + line);
