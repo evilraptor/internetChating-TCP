@@ -4,13 +4,15 @@ import Client.Client;
 import Server.Server;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import java.lang.ref.Cleaner;
 
 public class MyWindow extends JFrame {
     private JButton serverButton, clientButton;
     private JTextField textField1, textField2, textField3;
     private JTextArea textArea;
-
+    JScrollPane scrollPane;
     public MyWindow() {
         super("the chat server/client window");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -18,6 +20,13 @@ public class MyWindow extends JFrame {
         // Создание кнопки
         serverButton = new JButton("start the server!");
         clientButton = new JButton("join a server!");
+
+        textArea = new JTextArea();
+        textArea.setEditable(false);
+
+        scrollPane = new JScrollPane(textArea);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
         serverButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //clientButton.setVisible(false);//FIXME здесь кнопка вторая про другой режим удаляется слишком рано
@@ -61,7 +70,14 @@ public class MyWindow extends JFrame {
                     // Создание нового экземпляра класса А и вызов его метода
                     //B b = new B();
                     //b.printText(textField1.getText(), textField2.getText());
-                    new Client(textField1.getText(), textField2.getText(),textField3.getText());
+                    //new Client(textField1.getText(), textField2.getText(),textField3.getText());
+                    Thread daemonThread = new Thread(new Runnable() {
+                        public void run() {
+                            Client client = new Client(textField1.getText(), textField2.getText(),textField3.getText(),textArea);
+                        }
+                    });
+                    daemonThread.setDaemon(true);
+                    daemonThread.start();
                 }
             }
         });
@@ -70,6 +86,9 @@ public class MyWindow extends JFrame {
         JPanel panel = new JPanel();
         panel.add(serverButton);
         panel.add(clientButton);
+        textArea.append("окно чата:\n");
+        textArea.setPreferredSize(new Dimension(200, 100));
+        panel.add(scrollPane);
 
         // Добавление панели на окно
         getContentPane().add(panel);
@@ -82,16 +101,8 @@ public class MyWindow extends JFrame {
     public static void main(String[] args) {
         new MyWindow();
     }
-}
 
-class A {
-    public void printText(String text1) {
-        System.out.println(text1);
-    }
-}
+    public void setNewTextToTextArea(String text){
 
-class B {
-    public void printText(String text1, String text2) {
-        System.out.println(text1 + " " + text2);
     }
 }

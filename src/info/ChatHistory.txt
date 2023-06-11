@@ -1,0 +1,2 @@
+The client 'just a Potato' sent me message: я купил себе машину
+The client 'just a Potato' sent me message: /quit
