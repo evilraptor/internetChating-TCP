@@ -11,25 +11,29 @@ public class ChatClient {
     private String localhost;
     private boolean graphicFlag;
     private JTextArea textArea;
+    private BufferedReader keyboard;
 
     public ChatClient() {
         userName = "just a Potato";
-        localhost = "192.168.1.48";
+        localhost = "192.168.1.59";//
         serverPort = 6666;
         graphicFlag = false;
         textArea = null;
+        keyboard=null;
     }
 
-    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort, JTextArea inputTextArea, boolean inputGraphicFlag) {
+    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort, JTextArea inputTextArea, boolean inputGraphicFlag,BufferedReader inputKeyboard) {
         userName = inputUserName;
         localhost = inputLocalhost;
         serverPort = inputServerPort;
         if ((!inputGraphicFlag) || (inputTextArea == null)) {
             graphicFlag = false;
             textArea = null;
+            keyboard=null;
         } else {
             graphicFlag = inputGraphicFlag;
             textArea = inputTextArea;
+            keyboard=inputKeyboard;
         }
     }
 
@@ -55,12 +59,14 @@ public class ChatClient {
                 //поток для чтения с клавиатуры.
                 InputStreamReader inputStreamReader;
                 inputStreamReader = new InputStreamReader(System.in);
-                BufferedReader keyboard;
-                keyboard = new BufferedReader(inputStreamReader);
+
+                if (keyboard == null)
+                    keyboard = new BufferedReader(inputStreamReader);
                 String line = null;
                 System.out.println("Ready to chat. Type something and press enter... (for example Info)");
                 out.writeUTF(userName);
                 out.flush();
+
                 while (true) {
                     if (keyboard.ready())
                         line = sendMessage(keyboard, in, out);
@@ -127,6 +133,6 @@ public class ChatClient {
 
     public void appendMessageOnTextArea(String text) {
         if (graphicFlag)
-            textArea.append(text+"\n");
+            textArea.append(text + "\n");
     }
 }

@@ -15,11 +15,12 @@ public class Client {
     }
 
     public Client(String text1, String text2, String text3) {
-        ChatClient chatClient = new ChatClient(text1, text2, Integer.parseInt(text3),null,false);
+        ChatClient chatClient = new ChatClient(text1, text2, Integer.parseInt(text3), null, false, null);
         chatClient.startClient();
     }
-    public Client(String text1, String text2, String text3, JTextArea inputTextArea) {
-        ChatClient chatClient = new ChatClient(text1, text2, Integer.parseInt(text3),inputTextArea,true);
+
+    public Client(String text1, String text2, String text3, JTextArea inputTextArea, BufferedReader inputKeyboard) {
+        ChatClient chatClient = new ChatClient(text1, text2, Integer.parseInt(text3), inputTextArea, true, inputKeyboard);
         chatClient.startClient();
     }
 }
