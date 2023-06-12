@@ -1,5 +1,7 @@
 package Client;
 
+import Graphic.TextContainer;
+
 import javax.swing.*;
 import java.io.*;
 import java.net.InetAddress;
@@ -11,7 +13,14 @@ public class ChatClient {
     private String localhost;
     private boolean graphicFlag;
     private JTextArea textArea;
-    private BufferedReader keyboard;
+    //private BufferedReader keyboard;
+    private String text;
+    private TextContainer textContainer;
+    private String line2;
+
+    public void changeText(String inputText) {
+        text = inputText;
+    }
 
     public ChatClient() {
         userName = "just a Potato";
@@ -19,21 +28,34 @@ public class ChatClient {
         serverPort = 6666;
         graphicFlag = false;
         textArea = null;
-        keyboard=null;
+        text = null;
     }
 
-    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort, JTextArea inputTextArea, boolean inputGraphicFlag,BufferedReader inputKeyboard) {
+    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort, JTextArea inputTextArea, boolean inputGraphicFlag) {
         userName = inputUserName;
         localhost = inputLocalhost;
         serverPort = inputServerPort;
         if ((!inputGraphicFlag) || (inputTextArea == null)) {
             graphicFlag = false;
             textArea = null;
-            keyboard=null;
         } else {
             graphicFlag = inputGraphicFlag;
             textArea = inputTextArea;
-            keyboard=inputKeyboard;
+        }
+    }
+
+    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort, JTextArea inputTextArea, boolean inputGraphicFlag, TextContainer inputTextContainer) {
+        userName = inputUserName;
+        localhost = inputLocalhost;
+        serverPort = inputServerPort;
+        if ((!inputGraphicFlag) || (inputTextArea == null) || (inputTextContainer == null)) {
+            graphicFlag = false;
+            textArea = null;
+            text = null;
+        } else {
+            graphicFlag = inputGraphicFlag;
+            textArea = inputTextArea;
+            textContainer = inputTextContainer;
         }
     }
 
@@ -60,21 +82,36 @@ public class ChatClient {
                 InputStreamReader inputStreamReader;
                 inputStreamReader = new InputStreamReader(System.in);
 
-                if (keyboard == null)
-                    keyboard = new BufferedReader(inputStreamReader);
-                String line = null;
+                BufferedReader keyboard = new BufferedReader(inputStreamReader);
                 System.out.println("Ready to chat. Type something and press enter... (for example Info)");
                 out.writeUTF(userName);
                 out.flush();
+                appendMessageOnTextArea(userName + "\n");
+                Timer timer = new Timer(30000, e -> {
+                    line2 = "/quit";
+                    try {
+                        sendMessageFromString(line2,in,out);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+                timer.setRepeats(false);
+                timer.start();
+                sendMessageFromString("/showHistory",in,out);
 
                 while (true) {
-                    if (keyboard.ready())
-                        line = sendMessage(keyboard, in, out);
-                    else if (in.available() > 0)
-                        readNewMessages(in);
-
-                    if ((line != null) && (line.endsWith("/quit"))) {
+                    if ((line2 != null) && (line2.endsWith("/quit"))) {
                         break;
+                    }
+
+                    if (keyboard.ready() && (!graphicFlag)) {
+                        line2 = sendMessage(keyboard, in, out);
+                        timer.restart();
+                    } else if (in.available() > 0) {
+                        readNewMessages(in);
+                    } else if ((graphicFlag)) {
+                        line2 = sendMessageFromTextContainer(textContainer, in, out);
+                        timer.restart();
                     }
 
                 }
@@ -96,6 +133,36 @@ public class ChatClient {
         //ввел строку и нажал Enter
         line = keyboard.readLine();
         // Отсылаем строку серверу
+        out.writeUTF(line);
+        // Завершаем поток
+        out.flush();
+        // Ждем ответа от сервера
+        line = readNewMessages(in);
+        appendMessageOnTextArea(line);
+        return line;
+    }
+
+    String sendMessageFromTextContainer(TextContainer inTextContainer, DataInputStream in, DataOutputStream out) throws IOException {
+        String line = null;
+        //ввел строку и нажал Enter
+        line = textContainer.getText();
+        //line = keyboard.readLine();
+        // Отсылаем строку серверу
+        if (!line.equals("")) {
+            out.writeUTF(line);
+            // Завершаем поток
+            out.flush();
+            // Ждем ответа от сервера
+            line = readNewMessages(in);
+            appendMessageOnTextArea(line);
+            text = "";
+            inTextContainer.setText(text);
+        }
+        return line;
+    }
+
+    String sendMessageFromString(String text, DataInputStream in, DataOutputStream out) throws IOException {
+        String line = text;
         out.writeUTF(line);
         // Завершаем поток
         out.flush();

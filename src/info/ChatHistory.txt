@@ -1,2 +1,1 @@
-The client 'ыфв' sent me message: ывф
-The client 'just a Potato' sent me message: ывфвыф
+The client 'dsadsa' sent me message: /showHistory

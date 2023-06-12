@@ -9,6 +9,7 @@ public class UserProfile {
     private String userName;
     private Socket clientSocket;
     private DataInputStream dis;
+    private DataInputStream disFromGraphic;
     private DataOutputStream dos;
 
     //private Server server;
@@ -44,5 +45,13 @@ public class UserProfile {
 
     public DataOutputStream getDos() {
         return dos;
+    }
+
+    public void setDisFromGraphic(DataInputStream disFromGraphic) {
+        this.disFromGraphic = disFromGraphic;
+    }
+
+    public DataInputStream getDisFromGraphic() {
+        return disFromGraphic;
     }
 }

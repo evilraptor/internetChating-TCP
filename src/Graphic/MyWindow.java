@@ -5,9 +5,7 @@ import Client.Client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class MyWindow extends JFrame {
     private JButton serverButton, clientButton;
@@ -15,7 +13,8 @@ public class MyWindow extends JFrame {
     private JTextArea messagesTextArea;
     private JTextField textInputField;
     private JScrollPane scrollPane;
-    private BufferedReader inputChatReader;
+    String text = "";
+    TextContainer textContainer = new TextContainer();
 
     public MyWindow() {
         super("the chat server/client window");
@@ -24,12 +23,18 @@ public class MyWindow extends JFrame {
         // Создание кнопки
         serverButton = new JButton("start the server!");
         clientButton = new JButton("join a server!");
+        serverButton.setVisible(false);
 
         messagesTextArea = new JTextArea();
         messagesTextArea.setEditable(false);
 
         scrollPane = new JScrollPane(messagesTextArea);
+
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+        textInputField = new JTextField();
+        textInputField.setPreferredSize(new Dimension(200, 50));
 
         serverButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -72,40 +77,35 @@ public class MyWindow extends JFrame {
                 if (result == JOptionPane.OK_OPTION) {
                     Thread daemonThread = new Thread(new Runnable() {
                         public void run() {
-                            Client client = new Client(textField1.getText(), textField2.getText(), textField3.getText(), messagesTextArea, inputChatReader);
+                            Client client = new Client(textField1.getText(), textField2.getText(), textField3.getText(), messagesTextArea, textContainer);
+                            //Client client = new Client(textField1.getText(), textField2.getText(), textField3.getText(), messagesTextArea);
                         }
                     });
                     daemonThread.setDaemon(true);
                     daemonThread.start();
+//                    clientButton.setVisible(false);
+//                    String name=textField1.getText();
+//                    getContentPane().setName(name);
                 }
             }
         });
-
-        textInputField = new JTextField();
-        textInputField.setPreferredSize(new Dimension(200, 50));
         textInputField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Обрабатываем событие нажатия клавиши Enter
-                String text = textInputField.getText();
-                try {
-                    inputChatReader = new BufferedReader(new InputStreamReader(System.in));
-                    inputChatReader.readLine();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                System.out.println(text);
-                textInputField.setText("");
+                text = textInputField.getText(); // получение введенного текста
+                textInputField.setText(""); // очистка поля ввода
+                textContainer.setText(text);
             }
         });
 
         // Добавление компонентов на панель
         JPanel panel = new JPanel();
-        panel.add(serverButton);
-        panel.add(clientButton);
-        messagesTextArea.append("окно чата:\n");
-        messagesTextArea.setPreferredSize(new Dimension(200, 100));
-        panel.add(scrollPane);
+        //panel.add(serverButton);
+        clientButton.setPreferredSize(new Dimension(150, 50));
+        panel.add(clientButton,BorderLayout.NORTH);
+        messagesTextArea.append("окно чата:\n  ожидаю подключения...\n");
+        messagesTextArea.setSize(new Dimension(200, 300));
+        panel.add(scrollPane,BorderLayout.CENTER);
         panel.add(textInputField, BorderLayout.SOUTH);
 
         // Добавление панели на окно
@@ -114,6 +114,9 @@ public class MyWindow extends JFrame {
         // Настройка размеров окна и его видимости
         setSize(300, 400);
         setVisible(true);
+
+        //while (true)
+        //System.out.println(text);
     }
 
     public static void main(String[] args) {
