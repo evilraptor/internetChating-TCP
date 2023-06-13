@@ -1,4 +1,0 @@
-max_sleeper_user_life_time_in_mills 90000
-max_count_of_giving_messages 10
-saving_history_flag true
-name_of_log_file LogFile

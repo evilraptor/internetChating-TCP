@@ -1,6 +1,7 @@
 package Graphic;
 
 import Client.Client;
+import Server.ChatHistoryManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,9 +16,10 @@ public class MyWindow extends JFrame {
     private JScrollPane scrollPane;
     String text = "";
     TextContainer textContainer = new TextContainer();
+    private ChatHistoryManager chatHistoryManager;
 
     public MyWindow() {
-        super("the chat server/client window");
+        super();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Создание кнопки
@@ -25,7 +27,7 @@ public class MyWindow extends JFrame {
         clientButton = new JButton("join a server!");
         serverButton.setVisible(false);
 
-        messagesTextArea = new JTextArea();
+        messagesTextArea = new JTextArea(10,19);
         messagesTextArea.setEditable(false);
 
         scrollPane = new JScrollPane(messagesTextArea);
@@ -34,11 +36,11 @@ public class MyWindow extends JFrame {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         textInputField = new JTextField();
-        textInputField.setPreferredSize(new Dimension(200, 50));
+        textInputField.setPreferredSize(new Dimension(227, 50));
 
         serverButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //clientButton.setVisible(false);//FIXME здесь кнопка вторая про другой режим удаляется слишком рано
+                //clientButton.setVisible(false);//FIXME здесь кнопка вторая про другой режим удаляется слишком рано (чек)
 
                 // Создание панели для ввода текста
                 JPanel panel = new JPanel();
@@ -58,6 +60,8 @@ public class MyWindow extends JFrame {
                 }
             }
         });
+
+        chatHistoryManager=new ChatHistoryManager();
         clientButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Создание панели для ввода текста
@@ -75,9 +79,10 @@ public class MyWindow extends JFrame {
                 // Создание диалогового окна для ввода текста
                 int result = JOptionPane.showConfirmDialog(MyWindow.this, panel, "joining the server", JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.OK_OPTION) {
+                    clientButton.setVisible(false);
                     Thread daemonThread = new Thread(new Runnable() {
                         public void run() {
-                            Client client = new Client(textField1.getText(), textField2.getText(), textField3.getText(), messagesTextArea, textContainer);
+                            Client client = new Client(textField1.getText(), textField2.getText(), textField3.getText(), messagesTextArea, textContainer,chatHistoryManager);
                             //Client client = new Client(textField1.getText(), textField2.getText(), textField3.getText(), messagesTextArea);
                         }
                     });
@@ -95,6 +100,8 @@ public class MyWindow extends JFrame {
                 text = textInputField.getText(); // получение введенного текста
                 textInputField.setText(""); // очистка поля ввода
                 textContainer.setText(text);
+                if(text.equals("/quit"))
+                    textInputField.setEditable(false);
             }
         });
 
@@ -102,11 +109,10 @@ public class MyWindow extends JFrame {
         JPanel panel = new JPanel();
         //panel.add(serverButton);
         clientButton.setPreferredSize(new Dimension(150, 50));
-        panel.add(clientButton,BorderLayout.NORTH);
+        panel.add(clientButton);
         messagesTextArea.append("окно чата:\n  ожидаю подключения...\n");
-        messagesTextArea.setSize(new Dimension(200, 300));
-        panel.add(scrollPane,BorderLayout.CENTER);
-        panel.add(textInputField, BorderLayout.SOUTH);
+        panel.add(scrollPane);
+        panel.add(textInputField);
 
         // Добавление панели на окно
         getContentPane().add(panel);

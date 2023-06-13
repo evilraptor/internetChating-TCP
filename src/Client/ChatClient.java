@@ -1,6 +1,7 @@
 package Client;
 
 import Graphic.TextContainer;
+import Server.ChatHistoryManager;
 
 import javax.swing.*;
 import java.io.*;
@@ -17,6 +18,7 @@ public class ChatClient {
     private String text;
     private TextContainer textContainer;
     private String line2;
+    private int max_sleeper_user_life_time_in_mills;
 
     public void changeText(String inputText) {
         text = inputText;
@@ -44,11 +46,11 @@ public class ChatClient {
         }
     }
 
-    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort, JTextArea inputTextArea, boolean inputGraphicFlag, TextContainer inputTextContainer) {
+    public ChatClient(String inputUserName, String inputLocalhost, int inputServerPort, JTextArea inputTextArea, boolean inputGraphicFlag, TextContainer inputTextContainer, ChatHistoryManager inputChatHistoryManager) {
         userName = inputUserName;
         localhost = inputLocalhost;
         serverPort = inputServerPort;
-        if ((!inputGraphicFlag) || (inputTextArea == null) || (inputTextContainer == null)) {
+        if ((!inputGraphicFlag) || (inputTextArea == null) || (inputTextContainer == null)||(inputChatHistoryManager==null)) {
             graphicFlag = false;
             textArea = null;
             text = null;
@@ -56,6 +58,7 @@ public class ChatClient {
             graphicFlag = inputGraphicFlag;
             textArea = inputTextArea;
             textContainer = inputTextContainer;
+            max_sleeper_user_life_time_in_mills=inputChatHistoryManager.getMax_sleeper_user_life_time_in_mills();
         }
     }
 
@@ -86,18 +89,21 @@ public class ChatClient {
                 System.out.println("Ready to chat. Type something and press enter... (for example Info)");
                 out.writeUTF(userName);
                 out.flush();
-                appendMessageOnTextArea(userName + "\n");
-                Timer timer = new Timer(30000, e -> {
+                appendMessageOnTextArea(userName + " joined the server\n");
+                Timer timer = new Timer(max_sleeper_user_life_time_in_mills, e -> {
                     line2 = "/quit";
                     try {
-                        sendMessageFromString(line2,in,out);
+                        sendMessageFromString(line2, in, out, false);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
                 });
                 timer.setRepeats(false);
                 timer.start();
-                sendMessageFromString("/showHistory",in,out);
+                sendMessageFromString("/showHistory", in, out, false);
+                line2 = "";
+                if (textContainer != null)
+                    textContainer.setText("");
 
                 while (true) {
                     if ((line2 != null) && (line2.endsWith("/quit"))) {
@@ -108,9 +114,9 @@ public class ChatClient {
                         line2 = sendMessage(keyboard, in, out);
                         timer.restart();
                     } else if (in.available() > 0) {
-                        readNewMessages(in);
+                        readNewMessages(in, true);
                     } else if ((graphicFlag)) {
-                        line2 = sendMessageFromTextContainer(textContainer, in, out);
+                        line2 = sendMessageFromTextContainer(textContainer, in, out, false);
                         timer.restart();
                     }
 
@@ -137,12 +143,12 @@ public class ChatClient {
         // Завершаем поток
         out.flush();
         // Ждем ответа от сервера
-        line = readNewMessages(in);
-        appendMessageOnTextArea(line);
+        line = readNewMessages(in, true);
+        //appendMessageOnTextArea(line);
         return line;
     }
 
-    String sendMessageFromTextContainer(TextContainer inTextContainer, DataInputStream in, DataOutputStream out) throws IOException {
+    String sendMessageFromTextContainer(TextContainer inTextContainer, DataInputStream in, DataOutputStream out, boolean setToGraphicFlag) throws IOException {
         String line = null;
         //ввел строку и нажал Enter
         line = textContainer.getText();
@@ -153,26 +159,31 @@ public class ChatClient {
             // Завершаем поток
             out.flush();
             // Ждем ответа от сервера
-            line = readNewMessages(in);
-            appendMessageOnTextArea(line);
+            line = readNewMessages(in, true);
+            if (setToGraphicFlag)
+                appendMessageOnTextArea(line);
             text = "";
-            inTextContainer.setText(text);
+            if (textContainer != null)
+                inTextContainer.setText(text);
         }
         return line;
     }
 
-    String sendMessageFromString(String text, DataInputStream in, DataOutputStream out) throws IOException {
+    String sendMessageFromString(String text, DataInputStream in, DataOutputStream out, boolean setToGraphicFlag) throws IOException {
         String line = text;
         out.writeUTF(line);
         // Завершаем поток
         out.flush();
         // Ждем ответа от сервера
-        line = readNewMessages(in);
-        appendMessageOnTextArea(line);
+        line = readNewMessages(in, setToGraphicFlag);
+        if (setToGraphicFlag)
+            appendMessageOnTextArea(line);
+        if (textContainer != null)
+            textContainer.setText("");
         return line;
     }
 
-    String readNewMessages(DataInputStream in) throws IOException {
+    String readNewMessages(DataInputStream in, boolean setToGraphicFlag) throws IOException {
         String line = null;
         line = in.readUTF();
         if (line.equals("/quit"))
@@ -192,7 +203,8 @@ public class ChatClient {
             return line;
         } else {
             System.out.println(line);
-            appendMessageOnTextArea(line);
+            if (setToGraphicFlag)
+                appendMessageOnTextArea(line);
             //in.reset();
             return line;
         }

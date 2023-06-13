@@ -1,1 +1,0 @@
-The client 'dsadsa' sent me message: /showHistory
